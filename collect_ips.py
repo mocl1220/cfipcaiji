@@ -1,5 +1,4 @@
 import requests
-from bs4 import BeautifulSoup
 import re
 import os
 import time
@@ -47,9 +46,12 @@ def get_country(ip):
         url = f'https://ip9.com.cn/get?ip={ip}'
         resp = requests.get(url, timeout=5)
         if resp.status_code == 200:
-            # 返回内容形如 {"ip":"104.16.124.254","country":"美国",...}
+            # API返回格式: {"ret":200,"data":{"ip":"104.16.111.209","country":"美国",...}}
             data = resp.json()
-            return data.get('country', '未知')
+            if data.get('ret') == 200 and 'data' in data:
+                return data['data'].get('country', '未知')
+            else:
+                return '未知'
         else:
             return '未知'
     except Exception as e:
